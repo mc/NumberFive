@@ -8,13 +8,14 @@ wiki.login(WIKI_PASSWORD)
 
 exceptions = [ "Kategorie:URV", "Vorlage:Schnelllöschen" ]
 
-timeStart = Time.now - (10 * 24 * 60 * 60)
+timeStart = Time.now - (14 * 24 * 60 * 60)
 timeStartstring = timeStart.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 toDelete = wiki.query_list_categorymembers(:cmtitle => "Kategorie:Löschen", 
 	:cmlimit => 100, :cmprop => "timestamp|ids|title", :cmsort => "timestamp", 
 	:cmdir => "desc", :cmstart => timeStartstring)
 
+deleted = 0
 toDelete["query"]["categorymembers"]["cm"].each do |cm|
 	if cm.is_a?(Hash) and ! exceptions.include?(cm["title"])
 		puts cm["pageid"] + ": " + cm["timestamp"] + " - " + cm["title"]
@@ -22,5 +23,10 @@ toDelete["query"]["categorymembers"]["cm"].each do |cm|
 		deleteToken = token["query"]["pages"]["page"]["deletetoken"]
 		delete = wiki.delete(:pageid => cm["pageid"], :token => deleteToken, 
 			:reason => "Automatische Loeschung nach 14 Tagen per [[Benutzer:NumberFive/Loeschbot]]")
+		deleted = deleted + 1
+	end
+
+	if deleted > 50
+		exit 0
 	end
 end
