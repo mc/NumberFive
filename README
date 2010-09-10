@@ -1,0 +1,6 @@
+Dies ist ein Ruby Mediawiki Bot, der das Piratenpartei Wiki beackert.
+
+siehe: http://wiki.piratenpartei.de/Benutzer:NumberFive
+
+Die anhaengende Library war urspruenglich mal http://rbmediawiki.rubyforge.org/rdoc/
+wurde aber bereits massiv modifiziert.
