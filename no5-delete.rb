@@ -16,7 +16,11 @@ toDelete = wiki.query_list_categorymembers(:cmtitle => "Kategorie:Löschen",
 	:cmdir => "desc", :cmstart => timeStartstring)
 
 deleted = 0
-toDelete["query"]["categorymembers"]["cm"].each do |cm|
+cm = toDelete["query"]["categorymembers"]
+if cm.empty?
+	exit 0
+end
+cm["cm"].each do |cm|
 	if cm.is_a?(Hash) and ! exceptions.include?(cm["title"])
 		puts cm["pageid"] + ": " + cm["timestamp"] + " - " + cm["title"]
 		token = wiki.query_prop_info(:pageids => cm["pageid"], :intoken => "delete")
