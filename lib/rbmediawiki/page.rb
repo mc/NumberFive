@@ -13,7 +13,7 @@ class Page
 
     #retrieves the content of the page
     def get()
-        result = @site.query_prop_revisions(@normtitle, 'content')
+        result = @site.query_prop_revisions(:titles => @normtitle, :rvprop => 'content')
         if result.key?('error')
             raise RbmediawikiError, "#{title}: "+result['error']['code']
         else
@@ -56,9 +56,10 @@ class Page
         #require login
         @site.login
         puts text
-        result = @site.query_prop_info(@normtitle, nil, 'edit')    
+        result = @site.query_prop_info(:titles => @normtitle, :intoken => 'edit')
         token = result['query']['pages']['page']['edittoken']
-        result = @site.edit(@normtitle, nil, text, token, summary, minor, nil, bot, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, text)
+        result = @site.edit(:title => @normtitle, :text => text, :token => token, :summary => summary, 
+		:minor => minor, :bot => bot, :appendtext => text)
         if result.key?('error')
             raise RbmediawikiError, "#{title}: "+result['error']['code']
         else
@@ -144,9 +145,9 @@ class Page
     #returns true if success, raises NoPage if page doesn't exist
     def delete(reason="")
         @site.login
-        result = @site.query_prop_info(@normtitle, nil, 'delete') 
+        result = @site.query_prop_info(:titles => @normtitle, :intoken => 'delete') 
         token = result['query']['pages']['page']['deletetoken']
-        result = @site.delete(@normtitle, nil, token, reason)
+        result = @site.delete(:title => @normtitle, :token => token, :reason => reason)
         if result.key?('error')
             raise RbmediawikiError, "#{@title}: "+result['error']['code']
         else
