@@ -23,26 +23,28 @@ if cm.empty?
 	exit 0
 end
 
-loeschlog = Page.new("Benutzer:NumberFive/Loeschprotokoll", wiki)
-loeschtext = ""
-cm["cm"].each do |cm|
-	if cm.is_a?(Hash) and ! exceptions.include?(cm["title"])
-		page = Page.new(cm["title"], wiki)
-		content = page.get
-		loeschtext = loeschtext + "<br/> [[" + cm["title"] + "]]: " + 
-			content["content"].match(/.*\{\{L..?schen\|(.*?)\}\}.*/)[1]
-		page.delete("Automatische Loeschung nach 14 Tagen per [[Benutzer:NumberFive/Loeschbot]]")
-	end
+begin
+  loeschlog = Page.new("Benutzer:NumberFive/Loeschprotokoll", wiki)
+  loeschtext = ""
+  cm["cm"].each do |cm|
+    if cm.is_a?(Hash) and ! exceptions.include?(cm["title"])
+      page = Page.new(cm["title"], wiki)
+      content = page.get
+      loeschtext = loeschtext + "<br/> [[" + cm["title"] + "]]: " + 
+      content["content"].match(/.*\{\{L..?schen\|(.*?)\}\}.*/)[1]
+      page.delete("Automatische Loeschung nach 14 Tagen per " +
+        "[[Benutzer:NumberFive/Loeschbot]]")
+    end
 
-	deleted = deleted + 1
-	if deleted > 50
-		loeschtext = loeschtext + "\n == " + Time.now.to_s + " == \n"
-		loeschlog.append(loeschtext, "Loeschlog", false, true)
-		exit 0
-	end
-end
+    deleted = deleted + 1
+    if deleted > 50
+      exit 0
+    end
+  end
 
-if loeschtext != ""
-	loeschtext = loeschtext + "\n == " + Time.now.to_s + " == \n"
-	loeschlog.append(loeschtext, "Loeschlog", false, true)
+ensure
+  if loeschtext != ""
+    loeschtext = "\n== " + Time.now.to_s + " == \n" + loeschtext
+    loeschlog.append(loeschtext, "Loeschlog", false, true)
+  end
 end
