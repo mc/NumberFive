@@ -14,6 +14,7 @@ class Api
 
 	QUERY = [:titles, :pageid, :revids, :redirects, :indexpageids, :export, :exportnowrap]
 	MY_API = { 
+		"query" => QUERY,
 		"unblock" => [:id, :user, :token, :gettoken, :reason],
 		"import"  => [:token, :summary, :xml, :interwikisource, :interwikipage, :fullhistory, :templates, :namespace],
 		"undelete" => [:title, :token, :reason, :timestamps],
