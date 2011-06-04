@@ -1,7 +1,7 @@
 #! /usr/bin/ruby1.8
 
-require '/home/many/NumberFive/lib/rbmediawiki'
-require '/home/many/NumberFive/.conf/credentials'
+require '/home/many/wiki.pp/NumberFive/lib/rbmediawiki'
+require '/home/many/wiki.pp/NumberFive/.conf/credentials'
 
 # Sieht komplizierter aus als es ist.
 
@@ -10,7 +10,7 @@ wiki.login(WIKI_PASSWORD)
 
 exceptions = [ "Kategorie:URV", "Vorlage:Schnelllöschen" ]
 
-timeStart = Time.now - (14 * 24 * 60 * 60)
+timeStart = Time.now - (13 * 24 * 60 * 60)
 timeStartstring = timeStart.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 toDelete = wiki.query_list_categorymembers(:cmtitle => "Kategorie:Löschen", 
@@ -30,10 +30,18 @@ begin
     if cm.is_a?(Hash) and ! exceptions.include?(cm["title"])
       page = Page.new(cm["title"], wiki)
       content = page.get
-      loeschtext = loeschtext + "<br/> [[" + cm["title"] + "]]: " + 
-      content["content"].match(/.*\{\{L..?schen\|(.*?)\}\}.*/)[1]
-      page.delete("Automatische Loeschung nach 14 Tagen per " +
-        "[[Benutzer:NumberFive/Loeschbot]]")
+      reason = content["content"].match(/.*\{\{(SLA|(schnell)?L..?schen)\|?(.*?)?\}\}.*/i)
+      if reason != nil
+	  if reason[3].nil?
+            loeschtext = loeschtext + "<br/> [[" + cm["title"] + "]]: " + "(Keine Loeschbegruendung angegeben)"
+	  else
+            loeschtext = loeschtext + "<br/> [[" + cm["title"] + "]]: " + reason[3]
+	  end
+        page.delete("Automatische Loeschung nach 14 Tagen per " +
+          "[[Benutzer:NumberFive/Loeschbot]]: " + reason[3])
+      else
+        loeschtext = "<br/> :: [[" + cm["title"] + "]] -- '''Fehler beim Loeschen!"
+      end
     end
 
     deleted = deleted + 1
