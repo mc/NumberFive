@@ -1,8 +1,8 @@
 #! /usr/bin/ruby1.8
 
-require '/home/many/NumberFive/lib/rbmediawiki'
-require '/home/many/NumberFive/irc.rb'
-require '/home/many/NumberFive/.conf/credentials.rb'
+require '/home/many/wiki.pp/NumberFive/lib/rbmediawiki'
+require '/home/many/wiki.pp/NumberFive/irc.rb'
+require '/home/many/wiki.pp/NumberFive/.conf/credentials.rb'
 
 def irc_send(ircs, item)
 	zeile = "%s: %s; . . (%d Bytes) . . %s (%s)" % [item["type"], 
